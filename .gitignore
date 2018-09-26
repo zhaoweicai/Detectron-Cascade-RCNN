@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Shared objects
+*.so
+
+# Distribution / packaging
+build/
+*.egg-info/
+*.egg
+
+# Temporary files
+*.swn
+*.swo
+*.swp
+
+# Dataset symlinks
+detectron/datasets/data/*
+!detectron/datasets/data/README.md
+
+# Generated C files
+detectron/utils/cython_*.c
