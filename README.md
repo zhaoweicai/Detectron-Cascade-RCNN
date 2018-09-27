@@ -1,48 +1,29 @@
-# Detectron
+# Cascade R-CNN: Delving into High Quality Object Detection
 
-Detectron is Facebook AI Research's software system that implements state-of-the-art object detection algorithms, including [Mask R-CNN](https://arxiv.org/abs/1703.06870). It is written in Python and powered by the [Caffe2](https://github.com/caffe2/caffe2) deep learning framework.
+by Zhaowei Cai and Nuno Vasconcelos
 
-At FAIR, Detectron has enabled numerous research projects, including: [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144), [Mask R-CNN](https://arxiv.org/abs/1703.06870), [Detecting and Recognizing Human-Object Interactions](https://arxiv.org/abs/1704.07333), [Focal Loss for Dense Object Detection](https://arxiv.org/abs/1708.02002), [Non-local Neural Networks](https://arxiv.org/abs/1711.07971), [Learning to Segment Every Thing](https://arxiv.org/abs/1711.10370), [Data Distillation: Towards Omni-Supervised Learning](https://arxiv.org/abs/1712.04440), [DensePose: Dense Human Pose Estimation In The Wild](https://arxiv.org/abs/1802.00434), and [Group Normalization](https://arxiv.org/abs/1803.08494).
-
-<div align="center">
-  <img src="demo/output/33823288584_1d21cf0a26_k_example_output.jpg" width="700px" />
-  <p>Example Mask R-CNN output.</p>
-</div>
+This repository is written by Zhaowei Cai at UC San Diego, on the base of [Detectron](https://github.com/facebookresearch/Detectron) @ [e8942c8](https://github.com/facebookresearch/Detectron/tree/e8942c882abf6e28fe68a626ec55028c9bdfe1cf).
 
 ## Introduction
 
-The goal of Detectron is to provide a high-quality, high-performance
-codebase for object detection *research*. It is designed to be flexible in order
-to support rapid implementation and evaluation of novel research. Detectron
-includes implementations of the following object detection algorithms:
+This repository re-implements Cascade R-CNN on the base of [Detectron](https://github.com/facebookresearch/Detectron). Very consistent gains are available for all tested models, regardless of baseline strength.
 
-- [Mask R-CNN](https://arxiv.org/abs/1703.06870) -- *Marr Prize at ICCV 2017*
-- [RetinaNet](https://arxiv.org/abs/1708.02002) -- *Best Student Paper Award at ICCV 2017*
-- [Faster R-CNN](https://arxiv.org/abs/1506.01497)
-- [RPN](https://arxiv.org/abs/1506.01497)
-- [Fast R-CNN](https://arxiv.org/abs/1504.08083)
-- [R-FCN](https://arxiv.org/abs/1605.06409)
+This repository is still under construction. Will be updated very soon!
 
-using the following backbone network architectures:
+## Citation
 
-- [ResNeXt{50,101,152}](https://arxiv.org/abs/1611.05431)
-- [ResNet{50,101,152}](https://arxiv.org/abs/1512.03385)
-- [Feature Pyramid Networks](https://arxiv.org/abs/1612.03144) (with ResNet/ResNeXt)
-- [VGG16](https://arxiv.org/abs/1409.1556)
+If you use our code/model/data, please cite our paper:
 
-Additional backbone architectures may be easily implemented. For more details about these models, please see [References](#references) below.
+```
+@inproceedings{cai18cascadercnn,
+  author = {Zhaowei Cai and Nuno Vasconcelos},
+  Title = {Cascade R-CNN: Delving into High Quality Object Detection},
+  booktitle = {CVPR},
+  Year  = {2018}
+}
+```
 
-## Update
-
-- 4/2018: Support Group Normalization - see [`GN/README.md`](./projects/GN/README.md)
-
-## License
-
-Detectron is released under the [Apache 2.0 license](https://github.com/facebookresearch/detectron/blob/master/LICENSE). See the [NOTICE](https://github.com/facebookresearch/detectron/blob/master/NOTICE) file for additional details.
-
-## Citing Detectron
-
-If you use Detectron in your research or wish to refer to the baseline results published in the [Model Zoo](MODEL_ZOO.md), please use the following BibTeX entry.
+and Detectron:
 
 ```
 @misc{Detectron2018,
@@ -54,62 +35,308 @@ If you use Detectron in your research or wish to refer to the baseline results p
 }
 ```
 
-## Model Zoo and Baselines
+## Benchmarking
 
-We provide a large set of baseline results and trained models available for download in the [Detectron Model Zoo](MODEL_ZOO.md).
+### End-to-End Faster & Mask R-CNN Baselines
 
-## Installation
+<table><tbody>
+<!-- START E2E FASTER AND MASK TABLE -->
+<!-- TABLE HEADER -->
+<!-- Info: we use wrap text in <sup><sub></sub><sup> to make is small -->
+<th valign="bottom"><sup><sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backbone&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</sub></sup></th>
+<th valign="bottom"><sup><sub>type</sub></sup></th>
+<th valign="bottom"><sup><sub>lr<br/>schd</sub></sup></th>
+<th valign="bottom"><sup><sub>im/<br/>gpu</sub></sup></th>
+<th valign="bottom"><sup><sub>box<br/>AP</sub></sup></th>
+<th valign="bottom"><sup><sub>box<br/>AP50</sub></sup></th>
+<th valign="bottom"><sup><sub>box<br/>AP75</sub></sup></th>
+<th valign="bottom"><sup><sub>mask<br/>AP</sub></sup></th>
+<th valign="bottom"><sup><sub>mask<br/>AP50</sub></sup></th>
+<th valign="bottom"><sup><sub>mask<br/>AP75</sub></sup></th>
+<th valign="bottom"><sup><sub>download<br/>links</sub></sup></th>
+<!-- TABLE BODY -->
+<tr>
+<td align="left"><sup><sub>R-50-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>36.7</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35857345/12_2017_baselines/e2e_faster_rcnn_R-50-FPN_1x.yaml.01_36_30.cUF7QR7I/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35857345/12_2017_baselines/e2e_faster_rcnn_R-50-FPN_1x.yaml.01_36_30.cUF7QR7I/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-50-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>40.9</sub></sup></td>
+<td align="right"><sup><sub>59.0</sub></sup></td>
+<td align="right"><sup><sub>44.6</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35857389/12_2017_baselines/e2e_faster_rcnn_R-50-FPN_2x.yaml.01_37_22.KSeq0b5q/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35857389/12_2017_baselines/e2e_faster_rcnn_R-50-FPN_2x.yaml.01_37_22.KSeq0b5q/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-101-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>39.4</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35857890/12_2017_baselines/e2e_faster_rcnn_R-101-FPN_1x.yaml.01_38_50.sNxI7sX7/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35857890/12_2017_baselines/e2e_faster_rcnn_R-101-FPN_1x.yaml.01_38_50.sNxI7sX7/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-101-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>42.8</sub></sup></td>
+<td align="right"><sup><sub>61.4</sub></sup></td>
+<td align="right"><sup><sub>46.1</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35857952/12_2017_baselines/e2e_faster_rcnn_R-101-FPN_2x.yaml.01_39_49.JPwJDh92/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35857952/12_2017_baselines/e2e_faster_rcnn_R-101-FPN_2x.yaml.01_39_49.JPwJDh92/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-64x4d-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>41.5</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35858015/12_2017_baselines/e2e_faster_rcnn_X-101-64x4d-FPN_1x.yaml.01_40_54.1xc565DE/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35858015/12_2017_baselines/e2e_faster_rcnn_X-101-64x4d-FPN_1x.yaml.01_40_54.1xc565DE/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-64x4d-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>45.4</sub></sup></td>
+<td align="right"><sup><sub>64.0</sub></sup></td>
+<td align="right"><sup><sub>49.8</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35858198/12_2017_baselines/e2e_faster_rcnn_X-101-64x4d-FPN_2x.yaml.01_41_46.CX2InaoG/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35858198/12_2017_baselines/e2e_faster_rcnn_X-101-64x4d-FPN_2x.yaml.01_41_46.CX2InaoG/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-32x8d-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>41.3</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/36761737/12_2017_baselines/e2e_faster_rcnn_X-101-32x8d-FPN_1x.yaml.06_31_39.5MIHi1fZ/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36761737/12_2017_baselines/e2e_faster_rcnn_X-101-32x8d-FPN_1x.yaml.06_31_39.5MIHi1fZ/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-32x8d-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Faster</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>44.7</sub></sup></td>
+<td align="right"><sup><sub>63.7</sub></sup></td>
+<td align="right"><sup><sub>48.8</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/36761786/12_2017_baselines/e2e_faster_rcnn_X-101-32x8d-FPN_2x.yaml.06_33_22.VqFNuxk6/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36761786/12_2017_baselines/e2e_faster_rcnn_X-101-32x8d-FPN_2x.yaml.06_33_22.VqFNuxk6/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-50-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>37.7</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>33.9</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35858933/12_2017_baselines/e2e_mask_rcnn_R-50-FPN_1x.yaml.01_48_14.DzEQe4wC/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35858933/12_2017_baselines/e2e_mask_rcnn_R-50-FPN_1x.yaml.01_48_14.DzEQe4wC/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35858933/12_2017_baselines/e2e_mask_rcnn_R-50-FPN_1x.yaml.01_48_14.DzEQe4wC/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-50-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>41.3</sub></sup></td>
+<td align="right"><sup><sub>59.6</sub></sup></td>
+<td align="right"><sup><sub>44.9</sub></sup></td>
+<td align="right"><sup><sub>35.4</sub></sup></td>
+<td align="right"><sup><sub>56.2</sub></sup></td>
+<td align="right"><sup><sub>37.8</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35859007/12_2017_baselines/e2e_mask_rcnn_R-50-FPN_2x.yaml.01_49_07.By8nQcCH/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35859007/12_2017_baselines/e2e_mask_rcnn_R-50-FPN_2x.yaml.01_49_07.By8nQcCH/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35859007/12_2017_baselines/e2e_mask_rcnn_R-50-FPN_2x.yaml.01_49_07.By8nQcCH/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-101-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>40.0</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>35.9</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35861795/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_1x.yaml.02_31_37.KqyEK4tT/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35861795/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_1x.yaml.02_31_37.KqyEK4tT/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35861795/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_1x.yaml.02_31_37.KqyEK4tT/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-101-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35861858/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml.02_32_51.SgT4y1cO/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35861858/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml.02_32_51.SgT4y1cO/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35861858/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml.02_32_51.SgT4y1cO/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-64x4d-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>42.4</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>37.5</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/36494496/12_2017_baselines/e2e_mask_rcnn_X-101-64x4d-FPN_1x.yaml.07_50_11.fkwVtEvg/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36494496/12_2017_baselines/e2e_mask_rcnn_X-101-64x4d-FPN_1x.yaml.07_50_11.fkwVtEvg/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36494496/12_2017_baselines/e2e_mask_rcnn_X-101-64x4d-FPN_1x.yaml.07_50_11.fkwVtEvg/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-64x4d-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>45.9</sub></sup></td>
+<td align="right"><sup><sub>64.4</sub></sup></td>
+<td align="right"><sup><sub>50.2</sub></sup></td>
+<td align="right"><sup><sub>38.8</sub></sup></td>
+<td align="right"><sup><sub>61.3</sub></sup></td>
+<td align="right"><sup><sub>41.6</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/35859745/12_2017_baselines/e2e_mask_rcnn_X-101-64x4d-FPN_2x.yaml.02_00_30.ESWbND2w/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35859745/12_2017_baselines/e2e_mask_rcnn_X-101-64x4d-FPN_2x.yaml.02_00_30.ESWbND2w/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/35859745/12_2017_baselines/e2e_mask_rcnn_X-101-64x4d-FPN_2x.yaml.02_00_30.ESWbND2w/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-32x8d-FPN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>42.1</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>37.3</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/36761843/12_2017_baselines/e2e_mask_rcnn_X-101-32x8d-FPN_1x.yaml.06_35_59.RZotkLKI/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36761843/12_2017_baselines/e2e_mask_rcnn_X-101-32x8d-FPN_1x.yaml.06_35_59.RZotkLKI/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36761843/12_2017_baselines/e2e_mask_rcnn_X-101-32x8d-FPN_1x.yaml.06_35_59.RZotkLKI/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-101-32x8d-FPN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>45.8</sub></sup></td>
+<td align="right"><sup><sub>64.1</sub></sup></td>
+<td align="right"><sup><sub>50.3</sub></sup></td>
+<td align="right"><sup><sub>38.6</sub></sup></td>
+<td align="right"><sup><sub>60.6</sub></sup></td>
+<td align="right"><sup><sub>41.5</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/36762092/12_2017_baselines/e2e_mask_rcnn_X-101-32x8d-FPN_2x.yaml.06_37_59.DM5gJYRF/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36762092/12_2017_baselines/e2e_mask_rcnn_X-101-32x8d-FPN_2x.yaml.06_37_59.DM5gJYRF/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/36762092/12_2017_baselines/e2e_mask_rcnn_X-101-32x8d-FPN_2x.yaml.06_37_59.DM5gJYRF/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<!-- END E2E FASTER AND MASK TABLE -->
+</tbody></table>
 
-Please find installation instructions for Caffe2 and Detectron in [`INSTALL.md`](INSTALL.md).
+### Mask R-CNN with Bells & Whistles
 
-## Quick Start: Using Detectron
+<table><tbody>
+<!-- START BELLS TABLE -->
+<!-- TABLE HEADER -->
+<!-- Info: we use wrap text in <sup><sub></sub><sup> to make is small -->
+<th valign="bottom"><sup><sub>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backbone&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</sub></sup></th>
+<th valign="bottom"><sup><sub>type</sub></sup></th>
+<th valign="bottom"><sup><sub>lr<br/>schd</sub></sup></th>
+<th valign="bottom"><sup><sub>im/<br/>gpu</sub></sup></th>
+<th valign="bottom"><sup><sub>box<br/>AP</sub></sup></th>
+<th valign="bottom"><sup><sub>box<br/>AP50</sub></sup></th>
+<th valign="bottom"><sup><sub>box<br/>AP75</sub></sup></th>
+<th valign="bottom"><sup><sub>mask<br/>AP</sub></sup></th>
+<th valign="bottom"><sup><sub>mask<br/>AP50</sub></sup></th>
+<th valign="bottom"><sup><sub>mask<br/>AP75</sub></sup></th>
+<th valign="bottom"><sup><sub>download<br/>links</sub></sup></th>
+<!-- TABLE BODY -->
+<tr>
+<td align="left"><sup><sub>X-152-32x8d-FPN-IN5k-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>s1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>48.1</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>41.5</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/37129812/12_2017_baselines/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x.yaml.09_35_36.8pzTQKYK/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/37129812/12_2017_baselines/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x.yaml.09_35_36.8pzTQKYK/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/37129812/12_2017_baselines/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x.yaml.09_35_36.8pzTQKYK/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>[above without test-time aug.]</sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+<td align="right"><sup><sub>45.2</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>39.7</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>X-152-32x8d-FPN-IN5k-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>s1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>50.2</sub></sup></td>
+<td align="right"><sup><sub>68.2</sub></sup></td>
+<td align="right"><sup><sub>55.0</sub></sup></td>
+<td align="right"><sup><sub>42.3</sub></sup></td>
+<td align="right"><sup><sub>65.4</sub></sup></td>
+<td align="right"><sup><sub>45.8</sub></sup></td>
+<td align="left"><sup><sub><a href="https://s3-us-west-2.amazonaws.com/detectron/37129812/12_2017_baselines/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x.yaml.09_35_36.8pzTQKYK/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/37129812/12_2017_baselines/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x.yaml.09_35_36.8pzTQKYK/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>&nbsp;|&nbsp;<a href="https://s3-us-west-2.amazonaws.com/detectron/37129812/12_2017_baselines/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x.yaml.09_35_36.8pzTQKYK/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>[above without test-time aug.]</sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+<td align="right"><sup><sub>48.1</sub></sup></td>
+<td align="right"><sup><sub>66.7</sub></sup></td>
+<td align="right"><sup><sub>52.6</sub></sup></td>
+<td align="right"><sup><sub>40.7</sub></sup></td>
+<td align="right"><sup><sub>63.7</sub></sup></td>
+<td align="right"><sup><sub>43.8</sub></sup></td>
+<td align="right"><sup><sub></sub></sup></td>
+</tr>
+<!-- END BELLS TABLE -->
+</tbody></table>
 
-After installation, please see [`GETTING_STARTED.md`](GETTING_STARTED.md) for brief tutorials covering inference and training with Detectron.
 
-## Getting Help
-
-To start, please check the [troubleshooting](INSTALL.md#troubleshooting) section of our installation instructions as well as our [FAQ](FAQ.md). If you couldn't find help there, try searching our GitHub issues. We intend the issues page to be a forum in which the community collectively troubleshoots problems.
-
-If bugs are found, **we appreciate pull requests** (including adding Q&A's to `FAQ.md` and improving our installation instructions and troubleshooting documents). Please see [CONTRIBUTING.md](CONTRIBUTING.md) for more information about contributing to Detectron.
-
-## References
-
-- [Data Distillation: Towards Omni-Supervised Learning](https://arxiv.org/abs/1712.04440).
-  Ilija Radosavovic, Piotr Dollár, Ross Girshick, Georgia Gkioxari, and Kaiming He.
-  Tech report, arXiv, Dec. 2017.
-- [Learning to Segment Every Thing](https://arxiv.org/abs/1711.10370).
-  Ronghang Hu, Piotr Dollár, Kaiming He, Trevor Darrell, and Ross Girshick.
-  Tech report, arXiv, Nov. 2017.
-- [Non-Local Neural Networks](https://arxiv.org/abs/1711.07971).
-  Xiaolong Wang, Ross Girshick, Abhinav Gupta, and Kaiming He.
-  Tech report, arXiv, Nov. 2017.
-- [Mask R-CNN](https://arxiv.org/abs/1703.06870).
-  Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick.
-  IEEE International Conference on Computer Vision (ICCV), 2017.
-- [Focal Loss for Dense Object Detection](https://arxiv.org/abs/1708.02002).
-  Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, and Piotr Dollár.
-  IEEE International Conference on Computer Vision (ICCV), 2017.
-- [Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour](https://arxiv.org/abs/1706.02677).
-  Priya Goyal, Piotr Dollár, Ross Girshick, Pieter Noordhuis, Lukasz Wesolowski, Aapo Kyrola, Andrew Tulloch, Yangqing Jia, and Kaiming He.
-  Tech report, arXiv, June 2017.
-- [Detecting and Recognizing Human-Object Interactions](https://arxiv.org/abs/1704.07333).
-  Georgia Gkioxari, Ross Girshick, Piotr Dollár, and Kaiming He.
-  Tech report, arXiv, Apr. 2017.
-- [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144).
-  Tsung-Yi Lin, Piotr Dollár, Ross Girshick, Kaiming He, Bharath Hariharan, and Serge Belongie.
-  IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2017.
-- [Aggregated Residual Transformations for Deep Neural Networks](https://arxiv.org/abs/1611.05431).
-  Saining Xie, Ross Girshick, Piotr Dollár, Zhuowen Tu, and Kaiming He.
-  IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2017.
-- [R-FCN: Object Detection via Region-based Fully Convolutional Networks](http://arxiv.org/abs/1605.06409).
-  Jifeng Dai, Yi Li, Kaiming He, and Jian Sun.
-  Conference on Neural Information Processing Systems (NIPS), 2016.
-- [Deep Residual Learning for Image Recognition](http://arxiv.org/abs/1512.03385).
-  Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
-  IEEE Conference on Computer Vision and Pattern Recognition (CVPR), 2016.
-- [Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks](http://arxiv.org/abs/1506.01497)
-  Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun.
-  Conference on Neural Information Processing Systems (NIPS), 2015.
-- [Fast R-CNN](http://arxiv.org/abs/1504.08083).
-  Ross Girshick.
-  IEEE International Conference on Computer Vision (ICCV), 2015.
