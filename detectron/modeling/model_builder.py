@@ -46,6 +46,7 @@ from detectron.core.config import cfg
 from detectron.modeling.detector import DetectionModelHelper
 from detectron.roi_data.loader import RoIDataLoader
 import detectron.modeling.fast_rcnn_heads as fast_rcnn_heads
+import detectron.modeling.cascade_rcnn_heads as cascade_rcnn_heads
 import detectron.modeling.keypoint_rcnn_heads as keypoint_rcnn_heads
 import detectron.modeling.mask_rcnn_heads as mask_rcnn_heads
 import detectron.modeling.name_compat as name_compat
@@ -84,6 +85,7 @@ def generalized_rcnn(model):
         model,
         get_func(cfg.MODEL.CONV_BODY),
         add_roi_box_head_func=get_func(cfg.FAST_RCNN.ROI_BOX_HEAD),
+        add_roi_cascade_head_func=get_func(cfg.CASCADE_RCNN.ROI_BOX_HEAD),
         add_roi_mask_head_func=get_func(cfg.MRCNN.ROI_MASK_HEAD),
         add_roi_keypoint_head_func=get_func(cfg.KRCNN.ROI_KEYPOINTS_HEAD),
         freeze_conv_body=cfg.TRAIN.FREEZE_CONV_BODY
@@ -121,7 +123,24 @@ def create(model_type_func, train=False, gpu_id=0):
     )
     model.only_build_forward_pass = False
     model.target_gpu_id = gpu_id
-    return get_func(model_type_func)(model)
+
+    model = get_func(model_type_func)(model)
+
+    if cfg.CASCADE_RCNN.SCALE_GRAD:
+        # replace the grad op's "scale" by "scale_grad"
+        # so the fprop and bprop scale can be different
+        for o in model.net.Proto().op:
+            if hasattr(o, "arg") and o.is_gradient_op:
+                value = None
+                for a in o.arg:
+                    if a.name == "scale_grad":
+                        value = a.f
+                if value is None:
+                    continue
+                for a in o.arg:
+                    if a.name == "scale":
+                        a.f = value
+    return model
 
 
 def get_func(func_name):
@@ -156,6 +175,7 @@ def build_generic_detection_model(
     model,
     add_conv_body_func,
     add_roi_box_head_func=None,
+    add_roi_cascade_head_func=None,
     add_roi_mask_head_func=None,
     add_roi_keypoint_head_func=None,
     freeze_conv_body=False
@@ -202,6 +222,16 @@ def build_generic_detection_model(
                 model, add_roi_box_head_func, blob_conv, dim_conv,
                 spatial_scale_conv
             )
+            if cfg.MODEL.CASCADE_ON:
+                # Add the Cascade R-CNN head
+                num_stage = cfg.CASCADE_RCNN.NUM_STAGE
+                _check_for_cascade_rcnn()
+                for stage in range(2, num_stage + 1):
+                    stage_name = '_{}'.format(stage)
+                    head_loss_gradients['box' + stage_name] = _add_cascade_rcnn_head(
+                        model, add_roi_cascade_head_func,
+                        blob_conv, dim_conv, spatial_scale_conv, stage
+                    )
 
         if cfg.MODEL.MASK_ON:
             # Add the mask head
@@ -258,6 +288,49 @@ def _add_fast_rcnn_head(
         loss_gradients = fast_rcnn_heads.add_fast_rcnn_losses(model)
     else:
         loss_gradients = None
+    return loss_gradients
+
+
+def _check_for_cascade_rcnn():
+    assert cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+    num_stage = cfg.CASCADE_RCNN.NUM_STAGE
+    assert num_stage == len(cfg.CASCADE_RCNN.FG_THRESHS)
+    assert num_stage == len(cfg.CASCADE_RCNN.BG_THRESHS_HI)
+    assert num_stage == len(cfg.CASCADE_RCNN.BG_THRESHS_LO)
+    assert num_stage == len(cfg.CASCADE_RCNN.BBOX_REG_WEIGHTS)
+    assert num_stage == len(cfg.CASCADE_RCNN.STAGE_WEIGHTS)
+    for stage in range(num_stage):
+        assert cfg.CASCADE_RCNN.STAGE_WEIGHTS[stage] > 0
+    if cfg.CASCADE_RCNN.SCALE_LOSS:
+        assert not cfg.CASCADE_RCNN.SCALE_GRAD
+    if cfg.CASCADE_RCNN.SCALE_GRAD:
+        assert not cfg.CASCADE_RCNN.SCALE_LOSS
+
+
+def _add_cascade_rcnn_head(
+    model, add_roi_cascade_head_func, blob_in, dim_in, spatial_scale_in, stage
+):
+    """Add Cascade R-CNN heads to the model, by Zhaowei Cai."""
+    assert stage >= 2
+    pre_stage = stage - 1
+    cascade_rcnn_heads.add_cascade_proposal_outputs(model, stage, pre_stage)
+    blob_frcn, dim_frcn = add_roi_cascade_head_func(
+        model, blob_in, dim_in, spatial_scale_in, stage
+    )
+    blob_prob, _ = cascade_rcnn_heads.add_cascade_rcnn_outputs(
+        model, blob_frcn, dim_frcn, stage)
+    if model.train:
+        loss_gradients = cascade_rcnn_heads.add_cascade_rcnn_losses(model, stage)
+    else:
+        loss_gradients = None
+    if not model.train and cfg.CASCADE_RCNN.TEST_ENSEMBLE:
+        # add additional heads (shared parameters with previous layers)
+        # for cascade ensemble at inference
+        blobs_in = [blob_prob]
+        add_head_shared_func = get_func(cfg.CASCADE_RCNN.ROI_BOX_HEAD + "_shared")
+        for copy_stage in range(1, stage):
+            blobs_in += [add_head_shared_func(model, copy_stage, stage, dim_in)]
+        cascade_rcnn_heads.add_ensemble_output(model, blobs_in, stage)
     return loss_gradients
 
 

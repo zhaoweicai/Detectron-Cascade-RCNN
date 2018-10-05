@@ -13,9 +13,8 @@
 # limitations under the License.
 ##############################################################################
 
-"""Construct minibatches for Fast R-CNN training. Handles the minibatch blobs
-that are specific to Fast R-CNN. Other blobs that are generic to RPN, etc.
-are handled by their respecitive roi_data modules.
+"""Construct minibatches for Cascade R-CNN training. Handles the minibatch blobs
+that are specific to Cascade R-CNN.
 """
 
 from __future__ import absolute_import
@@ -25,7 +24,6 @@ from __future__ import unicode_literals
 
 import logging
 import numpy as np
-import numpy.random as npr
 
 from detectron.core.config import cfg
 import detectron.modeling.FPN as fpn
@@ -37,39 +35,33 @@ import detectron.utils.boxes as box_utils
 logger = logging.getLogger(__name__)
 
 
-def get_fast_rcnn_blob_names(is_training=True):
-    """Fast R-CNN blob names."""
+def get_cascade_rcnn_blob_names(stage, is_training=True):
+    """Cascade R-CNN blob names."""
     # rois blob: holds R regions of interest, each is a 5-tuple
     # (batch_idx, x1, y1, x2, y2) specifying an image batch index and a
     # rectangle (x1, y1, x2, y2)
-    blob_names = ['rois']
+    stage_name = "_{}".format(stage)
+    blob_names = ["rois" + stage_name]
     if is_training:
-        # labels_int32 blob: R categorical labels in [0, ..., K] for K
-        # foreground classes plus background
-        blob_names += ['labels_int32']
-    if is_training:
-        # bbox_targets blob: R bounding-box regression targets with 4
-        # targets per class
-        blob_names += ['bbox_targets']
-        # bbox_inside_weights blob: At most 4 targets per roi are active
-        # this binary vector sepcifies the subset of active targets
-        blob_names += ['bbox_inside_weights']
-        blob_names += ['bbox_outside_weights']
-        blob_names += ['mapped_gt_boxes']
-    if is_training and cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == 1:
+        blob_names += ["labels_int32" + stage_name]
+        blob_names += ["bbox_targets" + stage_name]
+        blob_names += ["bbox_inside_weights" + stage_name]
+        blob_names += ["bbox_outside_weights" + stage_name]
+        blob_names += ["mapped_gt_boxes" + stage_name]
+    if is_training and cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == stage:
         # 'mask_rois': RoIs sampled for training the mask prediction branch.
         # Shape is (#masks, 5) in format (batch_idx, x1, y1, x2, y2).
-        blob_names += ['mask_rois']
+        blob_names += ["mask_rois"]
         # 'roi_has_mask': binary labels for the RoIs specified in 'rois'
         # indicating if each RoI has a mask or not. Note that in some cases
         # a *bg* RoI will have an all -1 (ignore) mask associated with it in
         # the case that no fg RoIs can be sampled. Shape is (batchsize).
-        blob_names += ['roi_has_mask_int32']
+        blob_names += ["roi_has_mask_int32"]
         # 'masks_int32' holds binary masks for the RoIs specified in
         # 'mask_rois'. Shape is (#fg, M * M) where M is the ground truth
         # mask size.
-        blob_names += ['masks_int32']
-    if is_training and cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == 1:
+        blob_names += ["masks_int32"]
+    if is_training and cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == stage:
         # 'keypoint_rois': RoIs sampled for training the keypoint prediction
         # branch. Shape is (#instances, 5) in format (batch_idx, x1, y1, x2,
         # y2).
@@ -92,26 +84,28 @@ def get_fast_rcnn_blob_names(is_training=True):
         k_min = cfg.FPN.ROI_MIN_LEVEL
         # Same format as rois blob, but one per FPN level
         for lvl in range(k_min, k_max + 1):
-            blob_names += ['rois_fpn' + str(lvl)]
-        blob_names += ['rois_idx_restore_int32']
+            blob_names += ["rois" + stage_name + "_fpn" + str(lvl)]
+        blob_names += ["rois" + stage_name + "_idx_restore_int32"]
         if is_training:
-            if cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == 1:
+            if cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == stage:
                 for lvl in range(k_min, k_max + 1):
-                    blob_names += ['mask_rois_fpn' + str(lvl)]
-                blob_names += ['mask_rois_idx_restore_int32']
-            if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == 1:
+                    blob_names += ["mask_rois_fpn" + str(lvl)]
+                blob_names += ["mask_rois_idx_restore_int32"]
+            if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == stage:
                 for lvl in range(k_min, k_max + 1):
                     blob_names += ['keypoint_rois_fpn' + str(lvl)]
                 blob_names += ['keypoint_rois_idx_restore_int32']
     return blob_names
 
 
-def add_fast_rcnn_blobs(blobs, im_scales, roidb):
-    """Add blobs needed for training Fast R-CNN style models."""
+def add_cascade_rcnn_blobs(blobs, im_scales, roidb, stage):
+    """Add blobs needed for training Cascade R-CNN style models."""
     # Sample training RoIs from each image and append them to the blob lists
     for im_i, entry in enumerate(roidb):
-        frcn_blobs = _sample_rois(entry, im_scales[im_i], im_i)
+        frcn_blobs = _sample_rois(entry, im_scales[im_i], im_i, stage)
         for k, v in frcn_blobs.items():
+            if 'mask' not in k and 'keypoint' not in k:
+                k += "_{}".format(stage)
             blobs[k].append(v)
     # Concat the training blob lists into tensors
     for k, v in blobs.items():
@@ -119,61 +113,46 @@ def add_fast_rcnn_blobs(blobs, im_scales, roidb):
             blobs[k] = np.concatenate(v)
     # Add FPN multilevel training RoIs, if configured
     if cfg.FPN.FPN_ON and cfg.FPN.MULTILEVEL_ROIS:
-        _add_multilevel_rois(blobs)
+        _add_multilevel_rois(blobs, stage)
 
     # Perform any final work and validity checks after the collating blobs for
     # all minibatch images
     valid = True
-    if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == 1:
+    if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == stage:
         valid = keypoint_rcnn_roi_data.finalize_keypoint_minibatch(blobs, valid)
 
     return valid
 
 
-def _sample_rois(roidb, im_scale, batch_idx):
+def _sample_rois(roidb, im_scale, batch_idx, stage):
     """Generate a random sample of RoIs comprising foreground and background
     examples.
     """
-    rois_per_image = int(cfg.TRAIN.BATCH_SIZE_PER_IM)
-    fg_rois_per_image = int(np.round(cfg.TRAIN.FG_FRACTION * rois_per_image))
-    max_overlaps = roidb['max_overlaps']
+    fg_thresh = cfg.CASCADE_RCNN.FG_THRESHS[stage - 1]
+    bg_thresh_hi = cfg.CASCADE_RCNN.BG_THRESHS_HI[stage - 1]
+    bg_thresh_lo = cfg.CASCADE_RCNN.BG_THRESHS_LO[stage - 1]
+
+    max_overlaps = roidb["max_overlaps"]
 
     # Select foreground RoIs as those with >= FG_THRESH overlap
-    fg_inds = np.where(max_overlaps >= cfg.TRAIN.FG_THRESH)[0]
-    # Guard against the case when an image has fewer than fg_rois_per_image
-    # foreground RoIs
-    fg_rois_per_this_image = np.minimum(fg_rois_per_image, fg_inds.size)
-    # Sample foreground regions without replacement
-    if fg_inds.size > 0:
-        fg_inds = npr.choice(
-            fg_inds, size=fg_rois_per_this_image, replace=False
-        )
+    fg_inds = np.where(max_overlaps >= fg_thresh)[0]
+    fg_rois_per_this_image = fg_inds.size
 
     # Select background RoIs as those within [BG_THRESH_LO, BG_THRESH_HI)
     bg_inds = np.where(
-        (max_overlaps < cfg.TRAIN.BG_THRESH_HI) &
-        (max_overlaps >= cfg.TRAIN.BG_THRESH_LO)
+        (max_overlaps < bg_thresh_hi) & (max_overlaps >= bg_thresh_lo)
     )[0]
-    # Compute number of background RoIs to take from this image (guarding
-    # against there being fewer than desired)
-    bg_rois_per_this_image = rois_per_image - fg_rois_per_this_image
-    bg_rois_per_this_image = np.minimum(bg_rois_per_this_image, bg_inds.size)
-    # Sample foreground regions without replacement
-    if bg_inds.size > 0:
-        bg_inds = npr.choice(
-            bg_inds, size=bg_rois_per_this_image, replace=False
-        )
 
     # The indices that we're selecting (both fg and bg)
     keep_inds = np.append(fg_inds, bg_inds)
     # Label is the class each RoI has max overlap with
-    sampled_labels = roidb['max_classes'][keep_inds]
+    sampled_labels = roidb["max_classes"][keep_inds]
     sampled_labels[fg_rois_per_this_image:] = 0  # Label bg RoIs with class 0
-    sampled_boxes = roidb['boxes'][keep_inds]
+    sampled_boxes = roidb["boxes"][keep_inds]
 
-    gt_inds = np.where(roidb['gt_classes'] > 0)[0]
-    gt_boxes = roidb['boxes'][gt_inds, :]
-    gt_assignments = gt_inds[roidb['box_to_gt_ind_map'][keep_inds]]
+    gt_inds = np.where(roidb["gt_classes"] > 0)[0]
+    gt_boxes = roidb["boxes"][gt_inds, :]
+    gt_assignments = gt_inds[roidb["box_to_gt_ind_map"][keep_inds]]
 
     # [mapped_gt_boxes, max_overlaps]
     mapped_gt_boxes = blob_utils.zeros((keep_inds.size, 5))
@@ -181,9 +160,14 @@ def _sample_rois(roidb, im_scale, batch_idx):
     mapped_gt_boxes[:, 4] = max_overlaps[keep_inds]
     mapped_gt_boxes[fg_rois_per_this_image:, :] = 0
 
-    bbox_targets, bbox_inside_weights = _expand_bbox_targets(
-        roidb['bbox_targets'][keep_inds, :]
-    )
+    if "bbox_targets" not in roidb:
+        bbox_targets = _compute_targets(
+            sampled_boxes, gt_boxes[gt_assignments, :], sampled_labels, stage
+        )
+    else:
+        bbox_targets = roidb['bbox_targets'][keep_inds, :]
+
+    bbox_targets, bbox_inside_weights = _expand_bbox_targets(bbox_targets)
     bbox_outside_weights = np.array(
         bbox_inside_weights > 0, dtype=bbox_inside_weights.dtype
     )
@@ -193,30 +177,42 @@ def _sample_rois(roidb, im_scale, batch_idx):
     repeated_batch_idx = batch_idx * blob_utils.ones((sampled_rois.shape[0], 1))
     sampled_rois = np.hstack((repeated_batch_idx, sampled_rois))
 
-    # Base Fast R-CNN blobs
+    # Base Cascade R-CNN blobs
     blob_dict = dict(
         labels_int32=sampled_labels.astype(np.int32, copy=False),
         rois=sampled_rois,
         bbox_targets=bbox_targets,
         bbox_inside_weights=bbox_inside_weights,
         bbox_outside_weights=bbox_outside_weights,
-        mapped_gt_boxes=mapped_gt_boxes
+        mapped_gt_boxes=mapped_gt_boxes,
     )
 
     # Optionally add Mask R-CNN blobs
-    if cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == 1:
+    if cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == stage:
         mask_rcnn_roi_data.add_mask_rcnn_blobs(
             blob_dict, sampled_boxes, roidb, im_scale, batch_idx
         )
 
     # Optionally add Keypoint R-CNN blobs
-    if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == 1:
+    if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == stage:
         keypoint_rcnn_roi_data.add_keypoint_rcnn_blobs(
-            blob_dict, roidb, fg_rois_per_image, fg_inds, im_scale,
-            batch_idx, cfg.TRAIN.FG_THRESH
+            blob_dict, roidb, fg_rois_per_this_image,
+            fg_inds, im_scale, batch_idx, fg_thresh
         )
 
     return blob_dict
+
+
+def _compute_targets(ex_rois, gt_rois, labels, stage):
+    """Compute bounding-box regression targets for an image."""
+
+    assert ex_rois.shape[0] == gt_rois.shape[0]
+    assert ex_rois.shape[1] == 4
+    assert gt_rois.shape[1] == 4
+
+    bbox_reg_weights = cfg.CASCADE_RCNN.BBOX_REG_WEIGHTS[stage - 1]
+    targets = box_utils.bbox_transform_inv(ex_rois, gt_rois, bbox_reg_weights)
+    return np.hstack((labels[:, np.newaxis], targets)).astype(np.float32, copy=False)
 
 
 def _expand_bbox_targets(bbox_target_data):
@@ -248,12 +244,13 @@ def _expand_bbox_targets(bbox_target_data):
     return bbox_targets, bbox_inside_weights
 
 
-def _add_multilevel_rois(blobs):
+def _add_multilevel_rois(blobs, stage):
     """By default training RoIs are added for a single feature map level only.
     When using FPN, the RoIs must be distributed over different FPN levels
     according the level assignment heuristic (see: modeling.FPN.
     map_rois_to_fpn_levels).
     """
+    stage_name = "_{}".format(stage)
     lvl_min = cfg.FPN.ROI_MIN_LEVEL
     lvl_max = cfg.FPN.ROI_MAX_LEVEL
 
@@ -267,12 +264,11 @@ def _add_multilevel_rois(blobs):
         )
         # Add per FPN level roi blobs named like: <rois_blob_name>_fpn<lvl>
         fpn.add_multilevel_roi_blobs(
-            blobs, rois_blob_name, blobs[rois_blob_name], target_lvls, lvl_min,
-            lvl_max
+            blobs, rois_blob_name, blobs[rois_blob_name], target_lvls, lvl_min, lvl_max
         )
 
-    _distribute_rois_over_fpn_levels('rois')
-    if cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == 1:
-        _distribute_rois_over_fpn_levels('mask_rois')
-    if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == 1:
+    _distribute_rois_over_fpn_levels("rois" + stage_name)
+    if cfg.MODEL.MASK_ON and cfg.MRCNN.AT_STAGE == stage:
+        _distribute_rois_over_fpn_levels("mask_rois")
+    if cfg.MODEL.KEYPOINTS_ON and cfg.KRCNN.AT_STAGE == stage:
         _distribute_rois_over_fpn_levels('keypoint_rois')

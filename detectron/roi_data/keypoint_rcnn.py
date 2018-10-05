@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def add_keypoint_rcnn_blobs(
-    blobs, roidb, fg_rois_per_image, fg_inds, im_scale, batch_idx
+    blobs, roidb, fg_rois_per_image, fg_inds, im_scale, batch_idx, fg_thresh
 ):
     """Add Mask R-CNN keypoint specific blobs to the given blobs dictionary."""
     # Note: gt_inds must match how they're computed in
@@ -49,7 +49,7 @@ def add_keypoint_rcnn_blobs(
     vis_kp = gt_keypoints[ind_kp, 2, :] > 0
     is_visible = np.sum(np.logical_and(vis_kp, within_box), axis=1) > 0
     kp_fg_inds = np.where(
-        np.logical_and(max_overlaps >= cfg.TRAIN.FG_THRESH, is_visible)
+        np.logical_and(max_overlaps >= fg_thresh, is_visible)
     )[0]
 
     kp_fg_rois_per_this_image = np.minimum(fg_rois_per_image, kp_fg_inds.size)

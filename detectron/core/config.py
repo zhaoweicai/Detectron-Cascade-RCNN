@@ -470,6 +470,9 @@ __C.MODEL.BBOX_REG_WEIGHTS = (10., 10., 5., 5.)
 #    finally leads to a single network).
 __C.MODEL.FASTER_RCNN = False
 
+# Indicates the model uses Cascade R-CNN
+__C.MODEL.CASCADE_ON = False
+
 # Indicates the model makes instance mask predictions (as in Mask R-CNN)
 __C.MODEL.MASK_ON = False
 
@@ -663,6 +666,42 @@ __C.FAST_RCNN.ROI_XFORM_RESOLUTION = 14
 
 
 # ---------------------------------------------------------------------------- #
+# Cascade R-CNN options
+# ---------------------------------------------------------------------------- #
+__C.CASCADE_RCNN = AttrDict()
+
+# The type of RoI head to use for bounding box classification and regression
+# The string must match a function this is imported in modeling.model_builder
+# (e.g., 'head_builder.add_roi_2mlp_head' to specify a two hidden layer MLP)
+__C.CASCADE_RCNN.ROI_BOX_HEAD = b''
+__C.CASCADE_RCNN.NUM_STAGE = 3
+__C.CASCADE_RCNN.TEST_STAGE = 0
+__C.CASCADE_RCNN.TEST_ENSEMBLE = True
+
+# Overlap threshold for an RoI to be considered foreground (if >= FG_THRESH)
+__C.CASCADE_RCNN.FG_THRESHS = (0.5, 0.6, 0.7)
+
+# Overlap threshold for an RoI to be considered background (class = 0 if
+# overlap in [LO, HI))
+__C.CASCADE_RCNN.BG_THRESHS_HI = (0.5, 0.6, 0.7)
+__C.CASCADE_RCNN.BG_THRESHS_LO = (0.0, 0.0, 0.0)
+
+# Default weights on (dx, dy, dw, dh) for normalizing bbox regression targets
+# These are empirically chosen to approximately lead to unit variance targets
+__C.CASCADE_RCNN.BBOX_REG_WEIGHTS = ((10., 10., 5., 5.), (20., 20., 10., 10.),
+                                     (30., 30., 15., 15.))
+
+# scale loss for cascade stages
+__C.CASCADE_RCNN.SCALE_LOSS = True
+
+# scale loss for cascade stages
+__C.CASCADE_RCNN.SCALE_GRAD = False
+
+# weights for cascade stages
+__C.CASCADE_RCNN.STAGE_WEIGHTS = (1.0, 0.5, 0.25)
+
+
+# ---------------------------------------------------------------------------- #
 # RPN options
 # ---------------------------------------------------------------------------- #
 __C.RPN = AttrDict()
@@ -780,6 +819,9 @@ __C.MRCNN.WEIGHT_LOSS_MASK = 1.0
 # Binarization threshold for converting soft masks to hard masks
 __C.MRCNN.THRESH_BINARIZE = 0.5
 
+# Working stage in Cascade R-CNN during training
+__C.MRCNN.AT_STAGE = 1
+
 
 # ---------------------------------------------------------------------------- #
 # Keypoint Mask R-CNN options ("KRCNN" = Mask R-CNN with Keypoint support)
@@ -857,6 +899,9 @@ __C.KRCNN.LOSS_WEIGHT = 1.0
 # in the minibatch. See comments in modeling.model_builder.add_keypoint_losses
 # for detailed discussion.
 __C.KRCNN.NORMALIZE_BY_VISIBLE_KEYPOINTS = True
+
+# Working stage in Cascade R-CNN during training
+__C.KRCNN.AT_STAGE = 1
 
 
 # ---------------------------------------------------------------------------- #

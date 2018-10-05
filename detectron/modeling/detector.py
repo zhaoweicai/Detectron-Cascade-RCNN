@@ -32,9 +32,13 @@ from caffe2.python.modeling.parameter_info import ParameterTags
 from detectron.core.config import cfg
 from detectron.ops.collect_and_distribute_fpn_rpn_proposals \
     import CollectAndDistributeFpnRpnProposalsOp
+from detectron.ops.distribute_cascade_proposals import DistributeCascadeProposalsOp
 from detectron.ops.generate_proposal_labels import GenerateProposalLabelsOp
 from detectron.ops.generate_proposals import GenerateProposalsOp
+from detectron.ops.decode_bboxes import DecodeBBoxesOp
+from detectron.ops.bbox_accuracy import BBoxAccuracyOp
 import detectron.roi_data.fast_rcnn as fast_rcnn_roi_data
+import detectron.roi_data.cascade_rcnn as cascade_rcnn_roi_data
 import detectron.utils.c2 as c2_utils
 
 logger = logging.getLogger(__name__)
@@ -64,6 +68,7 @@ class DetectionModelHelper(cnn.CNNModelHelper):
         self.net.Proto().num_workers = cfg.NUM_GPUS * 4
         self.prev_use_cudnn = self.use_cudnn
         self.gn_params = []  # Param on this list are GroupNorm parameters
+        self.stage_params = {}  # Param on this list are updated with scalars
 
     def TrainableParams(self, gpu_id=-1):
         """Get the blob names for all trainable parameters, possibly filtered by
@@ -225,6 +230,74 @@ class DetectionModelHelper(cnn.CNNModelHelper):
 
         return outputs
 
+    def DecodeBBoxes(self, blobs_in, blobs_out, bbox_reg_weights):
+        """Op for decoding bboxes. Only support class-agnostic bbox regression.
+        by Zhaowei Cai for Cascade R-CNN
+
+        blobs_in:
+          - 'bbox_pred_<j>': 2D tensor of shape (R, 4 * 2) of predicted deltas
+            for transformation previous boxes into next boxes, at stage j.
+          - 'rois_<j>': 2D tensor of shape (R, 5), for proposals where the
+            five columns encode [batch ind, x1, y1, x2, y2], at stage j.
+
+        If used during training, then the input blobs will also include:
+          [mapped_gt_boxes_<j>], which is used to remove redundant ground truth.
+
+        blobs_out:
+          - 'proposals_<j+1>': 2D tensor of shape (R, 5), for proposals where the
+            five columns encode [batch ind, x1, y1, x2, y2].
+        """
+        name = 'DecodeBBoxesOp:' + ','.join([str(b) for b in blobs_in])
+        self.net.Python(DecodeBBoxesOp(bbox_reg_weights).forward)(
+            blobs_in, blobs_out, name=name
+        )
+        return blobs_out
+
+    def DistributeCascadeProposals(self, stage):
+        """Distribute proposals to their appropriate FPN levels.
+        by Zhaowei Cai for Cascade R-CNN
+
+        Input blobs:
+          - proposals_<j> are the decoded proposals from stage j; see
+            documentation from DecodeBBoxes.
+
+        If used during training, then the input blobs will also include:
+          [roidb, im_info] (see GenerateProposalLabels).
+
+        Output blobs: [rois_fpn<min>, ..., rois_rpn<max>, rois,
+                       rois_idx_restore]
+          - rois_fpn<i> are the RPN proposals for FPN level i
+          - rois_idx_restore is a permutation on the concatenation of all
+            rois_fpn<i>, i=min...max, such that when applied the RPN RoIs are
+            restored to their original order in the input blobs.
+
+        If used during training, then the output blobs will also include:
+          [labels, bbox_targets, bbox_inside_weights, bbox_outside_weights,
+          mapped_gt_boxes].
+        """
+        stage_name = '_{}'.format(stage)
+
+        # Prepare input blobs
+        blobs_in = ['proposals' + stage_name]
+        if self.train:
+            blobs_in += ['roidb', 'im_info']
+        blobs_in = [core.ScopedBlobReference(b) for b in blobs_in]
+        name = 'DistributeCascadeProposalsOp:' + ','.join(
+            [str(b) for b in blobs_in]
+        )
+
+        # Prepare output blobs
+        blobs_out = cascade_rcnn_roi_data.get_cascade_rcnn_blob_names(
+            stage, is_training=self.train
+        )
+        blobs_out = [core.ScopedBlobReference(b) for b in blobs_out]
+
+        outputs = self.net.Python(
+            DistributeCascadeProposalsOp(self.train, stage).forward
+        )(blobs_in, blobs_out, name=name)
+
+        return outputs
+
     def DropoutIfTraining(self, blob_in, dropout_rate):
         """Add dropout to blob_in if the model is in training mode and
         dropout_rate is > 0."""
@@ -333,6 +406,38 @@ class DetectionModelHelper(cnn.CNNModelHelper):
 
         return self.net.Conv(
             blobs_in, blob_out, kernel=kernel, order=self.order, **kwargs
+        )
+
+    def FCShared(
+        self,
+        blob_in,
+        blob_out,
+        weight=None,
+        bias=None,
+        **kwargs
+    ):
+        """Add fc op that shares weights and/or biases with another fc op.
+        """
+        use_bias = (
+            False if ('no_bias' in kwargs and kwargs['no_bias']) else True
+        )
+
+        if self.use_cudnn:
+            kwargs['engine'] = 'CUDNN'
+            kwargs['exhaustive_search'] = self.cudnn_exhaustive_search
+            if self.ws_nbytes_limit:
+                kwargs['ws_nbytes_limit'] = self.ws_nbytes_limit
+
+        if use_bias:
+            blobs_in = [blob_in, weight, bias]
+        else:
+            blobs_in = [blob_in, weight]
+
+        if 'no_bias' in kwargs:
+            del kwargs['no_bias']
+
+        return self.net.FC(
+            blobs_in, blob_out, order=self.order, **kwargs
         )
 
     def BilinearInterpolation(
@@ -453,6 +558,45 @@ class DetectionModelHelper(cnn.CNNModelHelper):
         self.gn_params.append(self.params[-2])  # add gn's scale to list
         return blob_out
 
+    def SpatialGNShared(
+        self,
+        blob_in,
+        blob_out,
+        group_gn,
+        scale=None,
+        bias=None,
+        **kwargs
+    ):
+        """Add gn op that shares weights and/or biases with another gn op.
+        """
+        use_bias = (
+            False if ('no_bias' in kwargs and kwargs['no_bias']) else True
+        )
+
+        if self.use_cudnn:
+            kwargs['engine'] = 'CUDNN'
+            kwargs['exhaustive_search'] = self.cudnn_exhaustive_search
+            if self.ws_nbytes_limit:
+                kwargs['ws_nbytes_limit'] = self.ws_nbytes_limit
+
+        if use_bias:
+            blobs_in = [blob_in, scale, bias]
+        else:
+            blobs_in = [blob_in, scale]
+
+        blobs_out = [blob_out, blob_out + "_mean", blob_out + "_std"]
+
+        if 'no_bias' in kwargs:
+            del kwargs['no_bias']
+
+        kwargs['group'] = group_gn
+        kwargs['epsilon'] = cfg.GROUP_NORM.EPSILON
+
+        blob_outputs = self.net.GroupNorm(
+            blobs_in, blobs_out, **kwargs
+        )
+        return blob_outputs[0]
+
     def DisableCudnn(self):
         self.prev_use_cudnn = self.use_cudnn
         self.use_cudnn = False
@@ -532,6 +676,29 @@ class DetectionModelHelper(cnn.CNNModelHelper):
         if not isinstance(metrics, list):
             metrics = [metrics]
         self.metrics = list(set(self.metrics + metrics))
+
+    def AddBBoxAccuracy(self, blobs_in, blobs_out, bbox_reg_weights):
+        """Op for bbox IoU accuracy, by Zhaowei Cai for Cascade R-CNN.
+
+        blobs_in: ['bbox_pred', 'rois', 'labels', 'mapped_gt_boxes']
+          - 'bbox_pred': 2D tensor of shape (R, 4 * C), predicted bbox deltas
+            for transformation previous boxes into next boxes.
+          - 'rois': 2D tensor of shape (R, 5), proposals where the
+            five columns encode [batch ind, x1, y1, x2, y2].
+          - 'labels': 2D tensor of shape (R, 1), classification labels to
+            identify fg rois.
+          - 'mapped_gt_boxes': 2D tensor of shape (R, 5), the corresponding gt
+            boxes where the five columns encode [x1, y1, x2, y2, IoU].
+
+        blobs_out:
+          - 'bbox_iou': mean IoU after bbox prediction.
+          - 'bbox_iou_pre': mean IoU before bbox prediction.
+        """
+        name = 'BBoxAccuracyOp:' + ','.join([str(b) for b in blobs_in])
+        self.net.Python(BBoxAccuracyOp(bbox_reg_weights).forward)(
+            blobs_in, blobs_out, name=name
+        )
+        return blobs_out
 
 
 def _get_lr_change_ratio(cur_lr, new_lr):

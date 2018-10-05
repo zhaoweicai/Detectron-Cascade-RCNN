@@ -110,6 +110,17 @@ def add_single_gpu_param_update_ops(model, gpu_id):
         param_momentum = model.param_init_net.ConstantFill(
             [param], param + '_momentum', value=0.0
         )
+
+        # rescale the weights of stage heads Cascade R-CNN
+        # by Zhaowei Cai for Cascade R-CNN
+        if cfg.MODEL.CASCADE_ON and cfg.CASCADE_RCNN.SCALE_LOSS:
+            for stage_str, stage_params in model.stage_params.items():
+                stage = int(stage_str)
+                scalar = 1.0 / cfg.CASCADE_RCNN.STAGE_WEIGHTS[stage - 1]
+                if param in stage_params:
+                    model.Scale(param_grad, param_grad, scale=scalar)
+                    print("param name: {}, scalar: {}".format(param, scalar))
+
         if param in model.biases:
             # Special treatment for biases (mainly to match historical impl.
             # details):

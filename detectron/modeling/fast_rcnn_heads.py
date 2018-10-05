@@ -71,12 +71,23 @@ def add_fast_rcnn_outputs(model, blob_in, dim):
         bias_init=const_fill(0.0)
     )
 
+    if cfg.MODEL.CASCADE_ON:
+        # add stage parameters to list
+        if '1' not in model.stage_params:
+            model.stage_params['1'] = []
+        for idx in range(-2, 0):
+            model.stage_params['1'].append(model.weights[idx])
+            model.stage_params['1'].append(model.biases[idx])
+
 
 def add_fast_rcnn_losses(model):
     """Add losses for RoI classification and bounding box regression."""
+    loss_scalar = 1.0
+    if cfg.MODEL.CASCADE_ON and cfg.CASCADE_RCNN.SCALE_LOSS:
+        loss_scalar = cfg.CASCADE_RCNN.STAGE_WEIGHTS[0]
     cls_prob, loss_cls = model.net.SoftmaxWithLoss(
         ['cls_score', 'labels_int32'], ['cls_prob', 'loss_cls'],
-        scale=model.GetLossScale()
+        scale=model.GetLossScale() * loss_scalar
     )
     loss_bbox = model.net.SmoothL1Loss(
         [
@@ -84,12 +95,17 @@ def add_fast_rcnn_losses(model):
             'bbox_outside_weights'
         ],
         'loss_bbox',
-        scale=model.GetLossScale()
+        scale=model.GetLossScale() * loss_scalar
     )
     loss_gradients = blob_utils.get_loss_gradients(model, [loss_cls, loss_bbox])
     model.Accuracy(['cls_prob', 'labels_int32'], 'accuracy_cls')
     model.AddLosses(['loss_cls', 'loss_bbox'])
     model.AddMetrics('accuracy_cls')
+    bbox_reg_weights = cfg.MODEL.BBOX_REG_WEIGHTS
+    model.AddBBoxAccuracy(
+        ['bbox_pred', 'rois', 'labels_int32', 'mapped_gt_boxes'],
+        ['bbox_iou', 'bbox_iou_pre'], bbox_reg_weights)
+    model.AddMetrics(['bbox_iou', 'bbox_iou_pre'])
     return loss_gradients
 
 
@@ -110,10 +126,25 @@ def add_roi_2mlp_head(model, blob_in, dim_in, spatial_scale):
         sampling_ratio=cfg.FAST_RCNN.ROI_XFORM_SAMPLING_RATIO,
         spatial_scale=spatial_scale
     )
+
+    # normalize the gradient by the number of cascade heads
+    if cfg.MODEL.CASCADE_ON and cfg.CASCADE_RCNN.SCALE_GRAD:
+        grad_scalar = cfg.CASCADE_RCNN.STAGE_WEIGHTS[0]
+        model.net.Scale(
+            roi_feat, roi_feat, scale=1.0, scale_grad=grad_scalar
+        )
+
     model.FC(roi_feat, 'fc6', dim_in * roi_size * roi_size, hidden_dim)
     model.Relu('fc6', 'fc6')
     model.FC('fc6', 'fc7', hidden_dim, hidden_dim)
     model.Relu('fc7', 'fc7')
+    if cfg.MODEL.CASCADE_ON:
+        # add stage parameters to list
+        if '1' not in model.stage_params:
+            model.stage_params['1'] = []
+        for idx in range(-2, 0):
+            model.stage_params['1'].append(model.weights[idx])
+            model.stage_params['1'].append(model.biases[idx])
     return 'fc7', hidden_dim
 
 
@@ -161,8 +192,16 @@ def add_roi_Xconv1fc_gn_head(model, blob_in, dim_in, spatial_scale):
         spatial_scale=spatial_scale
     )
 
+    # normalize the gradient by the number of cascade heads
+    if cfg.MODEL.CASCADE_ON and cfg.CASCADE_RCNN.SCALE_GRAD:
+        grad_scalar = cfg.CASCADE_RCNN.STAGE_WEIGHTS[0]
+        model.net.Scale(
+            roi_feat, roi_feat, scale=1.0, scale_grad=grad_scalar
+        )
+
     current = roi_feat
-    for i in range(cfg.FAST_RCNN.NUM_STACKED_CONVS):
+    num_convs = cfg.FAST_RCNN.NUM_STACKED_CONVS
+    for i in range(num_convs):
         current = model.ConvGN(
             current, 'head_conv' + str(i + 1), dim_in, hidden_dim, 3,
             group_gn=get_group_gn(hidden_dim),
@@ -175,4 +214,15 @@ def add_roi_Xconv1fc_gn_head(model, blob_in, dim_in, spatial_scale):
     fc_dim = cfg.FAST_RCNN.MLP_HEAD_DIM
     model.FC(current, 'fc6', dim_in * roi_size * roi_size, fc_dim)
     model.Relu('fc6', 'fc6')
+    if cfg.MODEL.CASCADE_ON:
+        # add stage parameters to list
+        if '1' not in model.stage_params:
+            model.stage_params['1'] = []
+        num_params = 2 * num_convs + 1
+        for idx in range(-num_params, 0):
+            model.stage_params['1'].append(model.weights[idx])
+        # head convs don't have bias
+        num_params = num_convs + 1
+        for idx in range(-num_params, 0):
+            model.stage_params['1'].append(model.biases[idx])
     return 'fc6', fc_dim
