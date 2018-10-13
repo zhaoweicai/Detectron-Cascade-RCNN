@@ -203,12 +203,12 @@ and Detectron:
 <td align="left"><sup><sub>Mask</sub></sup></td>
 <td align="left"><sup><sub>1x</sub></sup></td>
 <td align="right"><sup><sub>2</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>43.3</sub></sup></td>
+<td align="right"><sup><sub>61.7</sub></sup></td>
+<td align="right"><sup><sub>47.2</sub></sup></td>
+<td align="right"><sup><sub>37.1</sub></sup></td>
+<td align="right"><sup><sub>58.6</sub></sup></td>
+<td align="right"><sup><sub>39.8</sub></sup></td>
 <td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
 </tr>
 <tr>
@@ -303,11 +303,11 @@ and Detectron:
 <td align="right"><sup><sub></sub></sup></td>
 <td align="right"><sup><sub></sub></sup></td>
 <td align="right"><sup><sub>45.2</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>66.9</sub></sup></td>
+<td align="right"><sup><sub>49.7</sub></sup></td>
 <td align="right"><sup><sub>39.7</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>63.5</sub></sup></td>
+<td align="right"><sup><sub>42.4</sub></sup></td>
 <td align="right"><sup><sub></sub></sup></td>
 </tr>
 <tr>
@@ -339,7 +339,7 @@ and Detectron:
 <!-- END BELLS TABLE -->
 </tbody></table>
 
-### Mask R-CNN with GN
+### Faster & Mask R-CNN with GN
 
 <table><tbody>
 <!-- START E2E FASTER AND MASK TABLE -->
@@ -360,29 +360,24 @@ and Detectron:
 <tr>
 <td align="left"><sup><sub>R-50-FPN-GN-baseline</sub></sup></td>
 <td align="left"><sup><sub>Faster</sub></sup></td>
-<td align="left"><sup><sub>2x</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
 <td align="right"><sup><sub>2</sub></sup></td>
-<td align="right"><sup><sub>40.3</sub></sup></td>
-<td align="right"><sup><sub>61.0</sub></sup></td>
-<td align="right"><sup><sub>44.0</sub></sup></td>
-<td align="right"><sup><sub>35.7</sub></sup></td>
-<td align="right"><sup><sub>57.9</sub></sup></td>
-<td align="right"><sup><sub>37.7</sub></sup></td>
-<td align="left"><sup><sub>
-  <a href="https://s3-us-west-2.amazonaws.com/detectron/GN/48616381/04_2018_gn_baselines/e2e_mask_rcnn_R-50-FPN_2x_gn_0416.13_23_38.bTlTI97Q/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>
-  &nbsp;|&nbsp;
-  <a href="https://s3-us-west-2.amazonaws.com/detectron/GN/48616381/04_2018_gn_baselines/e2e_mask_rcnn_R-50-FPN_2x_gn_0416.13_23_38.bTlTI97Q/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>
-  &nbsp;|&nbsp;
-  <a href="https://s3-us-west-2.amazonaws.com/detectron/GN/48616381/04_2018_gn_baselines/e2e_mask_rcnn_R-50-FPN_2x_gn_0416.13_23_38.bTlTI97Q/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+<td align="right"><sup><sub>38.4</sub></sup></td>
+<td align="right"><sup><sub>59.9</sub></sup></td>
+<td align="right"><sup><sub>41.7</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-50-FPN-GN-cascade</sub></sup></td>
 <td align="left"><sup><sub>Faster</sub></sup></td>
-<td align="left"><sup><sub>2x</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
 <td align="right"><sup><sub>2</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>42.2</sub></sup></td>
+<td align="right"><sup><sub>60.6</sub></sup></td>
+<td align="right"><sup><sub>45.8</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
@@ -391,32 +386,79 @@ and Detectron:
 <tr>
 <td align="left"><sup><sub>R-101-FPN-GN-baseline</sub></sup></td>
 <td align="left"><sup><sub>Faster</sub></sup></td>
-<td align="left"><sup><sub>2x</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
 <td align="right"><sup><sub>2</sub></sup></td>
-<td align="right"><sup><sub>41.8</sub></sup></td>
-<td align="right"><sup><sub>62.5</sub></sup></td>
-<td align="right"><sup><sub>45.4</sub></sup></td>
-<td align="right"><sup><sub>36.8</sub></sup></td>
-<td align="right"><sup><sub>59.2</sub></sup></td>
-<td align="right"><sup><sub>39.0</sub></sup></td>
-<td align="left"><sup><sub>
-  <a href="https://s3-us-west-2.amazonaws.com/detectron/GN/48616724/04_2018_gn_baselines/e2e_mask_rcnn_R-101-FPN_2x_gn_0416.13_26_34.GLnri4GR/output/train/coco_2014_train%3Acoco_2014_valminusminival/generalized_rcnn/model_final.pkl">model</a>
-  &nbsp;|&nbsp;
-  <a href="https://s3-us-west-2.amazonaws.com/detectron/GN/48616724/04_2018_gn_baselines/e2e_mask_rcnn_R-101-FPN_2x_gn_0416.13_26_34.GLnri4GR/output/test/coco_2014_minival/generalized_rcnn/bbox_coco_2014_minival_results.json">boxes</a>
-  &nbsp;|&nbsp;
-  <a href="https://s3-us-west-2.amazonaws.com/detectron/GN/48616724/04_2018_gn_baselines/e2e_mask_rcnn_R-101-FPN_2x_gn_0416.13_26_34.GLnri4GR/output/test/coco_2014_minival/generalized_rcnn/segmentations_coco_2014_minival_results.json">masks</a></sub></sup></td>
+<td align="right"><sup><sub>39.9</sub></sup></td>
+<td align="right"><sup><sub>61.3</sub></sup></td>
+<td align="right"><sup><sub>43.3</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-101-FPN-GN-cascade</sub></sup></td>
 <td align="left"><sup><sub>Faster</sub></sup></td>
-<td align="left"><sup><sub>2x</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>43.8</sub></sup></td>
+<td align="right"><sup><sub>62.2</sub></sup></td>
+<td align="right"><sup><sub>47.6</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>-</sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-50-FPN-GN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
 <td align="right"><sup><sub>2</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
-<td align="right"><sup><sub>-</sub></sup></td>
+<td align="right"><sup><sub>39.2</sub></sup></td>
+<td align="right"><sup><sub>60.5</sub></sup></td>
+<td align="right"><sup><sub>42.9</sub></sup></td>
+<td align="right"><sup><sub>34.9</sub></sup></td>
+<td align="right"><sup><sub>57.1</sub></sup></td>
+<td align="right"><sup><sub>36.9</sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-50-FPN-GN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>42.9</sub></sup></td>
+<td align="right"><sup><sub>60.7</sub></sup></td>
+<td align="right"><sup><sub>46.6</sub></sup></td>
+<td align="right"><sup><sub>36.6</sub></sup></td>
+<td align="right"><sup><sub>57.7</sub></sup></td>
+<td align="right"><sup><sub>39.2</sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-101-FPN-GN-baseline</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>2</sub></sup></td>
+<td align="right"><sup><sub>41.1</sub></sup></td>
+<td align="right"><sup><sub>62.1</sub></sup></td>
+<td align="right"><sup><sub>45.1</sub></sup></td>
+<td align="right"><sup><sub>36.3</sub></sup></td>
+<td align="right"><sup><sub>58.9</sub></sup></td>
+<td align="right"><sup><sub>38.5</sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+</tr>
+<tr>
+<td align="left"><sup><sub>R-101-FPN-GN-cascade</sub></sup></td>
+<td align="left"><sup><sub>Mask</sub></sup></td>
+<td align="left"><sup><sub>1x</sub></sup></td>
+<td align="right"><sup><sub>1</sub></sup></td>
+<td align="right"><sup><sub>44.8</sub></sup></td>
+<td align="right"><sup><sub>62.8</sub></sup></td>
+<td align="right"><sup><sub>48.8</sub></sup></td>
+<td align="right"><sup><sub>38.0</sub></sup></td>
+<td align="right"><sup><sub>59.8</sub></sup></td>
+<td align="right"><sup><sub>40.8</sub></sup></td>
 <td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
 </tr>
 <!-- END E2E FASTER AND MASK TABLE -->
