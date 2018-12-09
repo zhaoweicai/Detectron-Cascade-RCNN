@@ -10,6 +10,8 @@ This repository re-implements Cascade R-CNN on the base of [Detectron](https://g
 
 Please follow [Detectron](https://github.com/facebookresearch/Detectron) on how to install and use Detectron-Cascade-RCNN.
 
+It is also recommended to use our original implementation, [cascade-rcnn](https://github.com/zhaoweicai/cascade-rcnn) based on Caffe, and the third-party implementation, [mmdetection](https://github.com/open-mmlab/mmdetection) based on PyTorch and [tensorpack](https://github.com/tensorpack/tensorpack/tree/master/examples/FasterRCNN) based on TensorFlow.
+
 ## Citation
 
 If you use our code/model/data, please cite our paper:
