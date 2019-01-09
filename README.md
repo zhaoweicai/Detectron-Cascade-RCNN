@@ -133,7 +133,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X101-64x4d-FPN-cascade-rcnn.json">boxes</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X101-64x4d-FPN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>X-101-32x8d-FPN-baseline</sub></sup></td>
