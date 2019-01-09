@@ -81,7 +81,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
+<td align="left"><sup><sub><a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/R50-FPN-cascade-rcnn.pkl">model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R50-FPN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-101-FPN-baseline</sub></sup></td>
@@ -107,7 +107,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
+<td align="left"><sup><sub><a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/R101-FPN-cascade-rcnn.pkl">model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R101-FPN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>X-101-64x4d-FPN-baseline</sub></sup></td>
@@ -133,7 +133,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X101-64x4d-FPN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>X-101-32x8d-FPN-baseline</sub></sup></td>
@@ -159,7 +159,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X101-32x8d-FPN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-50-FPN-baseline</sub></sup></td>
@@ -185,7 +185,7 @@ and Detectron:
 <td align="right"><sup><sub>35.4</sub></sup></td>
 <td align="right"><sup><sub>56.2</sub></sup></td>
 <td align="right"><sup><sub>37.8</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub><a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/R50-FPN-cascade-rcnn-mask.pkl">model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R50-FPN-cascade-rcnn-mask.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_R50-FPN-cascade-rcnn-mask.json">masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-101-FPN-baseline</sub></sup></td>
@@ -211,7 +211,7 @@ and Detectron:
 <td align="right"><sup><sub>37.1</sub></sup></td>
 <td align="right"><sup><sub>58.6</sub></sup></td>
 <td align="right"><sup><sub>39.8</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub><a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/R101-FPN-cascade-rcnn-mask.pkl">model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R101-FPN-cascade-rcnn-mask.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_R101-FPN-cascade-rcnn-mask.json">masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>X-101-64x4d-FPN-baseline</sub></sup></td>
@@ -237,7 +237,7 @@ and Detectron:
 <td align="right"><sup><sub>38.8</sub></sup></td>
 <td align="right"><sup><sub>61.3</sub></sup></td>
 <td align="right"><sup><sub>41.6</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X101-64x4d-FPN-cascade-rcnn-mask.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_X101-64x4d-FPN-cascade-rcnn-mask.json">masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>X-101-32x8d-FPN-baseline</sub></sup></td>
@@ -263,7 +263,7 @@ and Detectron:
 <td align="right"><sup><sub>38.6</sub></sup></td>
 <td align="right"><sup><sub>60.6</sub></sup></td>
 <td align="right"><sup><sub>41.5</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X101-32x8d-FPN-cascade-rcnn-mask.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_X101-32x8d-FPN-cascade-rcnn-mask.json">masks</a></sub></sup></td>
 </tr>
 <!-- END E2E FASTER AND MASK TABLE -->
 </tbody></table>
@@ -323,7 +323,7 @@ and Detectron:
 <td align="right"><sup><sub>42.3</sub></sup></td>
 <td align="right"><sup><sub>65.4</sub></sup></td>
 <td align="right"><sup><sub>45.8</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub><a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/X152-32x8d-FPN-cascade-rcnn-mask-aug.pkl">model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_X152-32x8d-FPN-cascade-rcnn-mask-aug.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_X152-32x8d-FPN-cascade-rcnn-mask-aug.json">masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>[above without test-time aug.]</sub></sup></td>
@@ -370,7 +370,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-50-FPN-GN-cascade</sub></sup></td>
@@ -383,7 +383,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R50-FPN-GN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-101-FPN-GN-baseline</sub></sup></td>
@@ -396,7 +396,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-101-FPN-GN-cascade</sub></sup></td>
@@ -409,7 +409,7 @@ and Detectron:
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
 <td align="right"><sup><sub>-</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R101-FPN-GN-cascade-rcnn.json">boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-50-FPN-GN-baseline</sub></sup></td>
@@ -422,7 +422,7 @@ and Detectron:
 <td align="right"><sup><sub>34.9</sub></sup></td>
 <td align="right"><sup><sub>57.1</sub></sup></td>
 <td align="right"><sup><sub>36.9</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-50-FPN-GN-cascade</sub></sup></td>
@@ -435,7 +435,7 @@ and Detectron:
 <td align="right"><sup><sub>36.6</sub></sup></td>
 <td align="right"><sup><sub>57.7</sub></sup></td>
 <td align="right"><sup><sub>39.2</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R50-FPN-GN-cascade-rcnn-mask.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_R50-FPN-GN-cascade-rcnn-mask.json">masks</a></sub></sup></td>
 </tr>
 <tr>
 <td align="left"><sup><sub>R-101-FPN-GN-baseline</sub></sup></td>
@@ -461,7 +461,7 @@ and Detectron:
 <td align="right"><sup><sub>38.0</sub></sup></td>
 <td align="right"><sup><sub>59.8</sub></sup></td>
 <td align="right"><sup><sub>40.8</sub></sup></td>
-<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;boxes</a>&nbsp;|&nbsp;masks</a></sub></sup></td>
+<td align="left"><sup><sub>model</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/bbox_coco_2014_minival_results_R101-FPN-GN-cascade-rcnn-mask.json">boxes</a>&nbsp;|&nbsp;<a href="http://www.svcl.ucsd.edu/projects/cascade-rcnn/results/segmentations_coco_2014_minival_results_R101-FPN-GN-cascade-rcnn-mask.json">masks</a></sub></sup></td>
 </tr>
 <!-- END E2E FASTER AND MASK TABLE -->
 </tbody></table>
